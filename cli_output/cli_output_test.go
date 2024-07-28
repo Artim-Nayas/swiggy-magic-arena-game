@@ -23,6 +23,21 @@ func TestRender(t *testing.T) {
 	r.Close()
 	assert.Equal(t, "output should be this\n", string(bytes))
 }
+
+func TestRenderInvalidOperation(t *testing.T) {
+	defer setupStdout()()
+	r, fakeStdout, err := os.Pipe()
+	require.NoError(t, err)
+
+	os.Stdout = fakeStdout
+	RenderInvalidOperation()
+
+	fakeStdout.Close()
+	bytes, err := io.ReadAll(r)
+	require.NoError(t, err)
+	r.Close()
+	assert.Equal(t, "Invalid operation\n", string(bytes))
+}
 func setupStdout() func() {
 	originalStdout := os.Stdout
 	return func() { os.Stdout = originalStdout }

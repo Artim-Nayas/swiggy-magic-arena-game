@@ -5,3 +5,8 @@ import "fmt"
 func Render(output string) {
 	fmt.Printf("%s\n", output)
 }
+
+func RenderInvalidOperation() {
+	fmt.Println("Invalid operation")
+}
+
