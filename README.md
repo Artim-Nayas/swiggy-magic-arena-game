@@ -13,7 +13,7 @@ Welcome to the Magic Arena Game! This is a command-line game where two players w
 To build the game, run the following command in the root directory of the repository:
 
 ```sh
-go build -o magic_arena_game main.go
+make build
 ```
 
 ### Run the Game
@@ -21,7 +21,15 @@ go build -o magic_arena_game main.go
 To start the game, execute the following command:
 
 ```sh
-./magic_arena_game
+make run
+```
+
+### Clean the Build
+
+To clean the build artifacts, use the following command:
+
+```sh
+make clean
 ```
 
 ### Running Tests
@@ -29,7 +37,21 @@ To start the game, execute the following command:
 The project uses the `testify` package for testing. To run the tests, use the following command:
 
 ```sh
-go test ./...
+make test
+```
+
+To check the test coverage, use the following command:
+
+```sh
+make test.cover
+```
+
+### Install Dependencies
+
+To install the necessary dependencies, use the following command:
+
+```sh
+make deps
 ```
 
 ### Game Instructions
@@ -90,36 +112,23 @@ magic_arena_game/
 │   └── roll_dice_test.go       # Test file for role dice
 ├── game_manager/
 │   ├── manager.go              # Manages the game flow and player creation
-│   ├── manager.go              # Manages the game flow and player creation
+│   ├── manager_test.go         # Test file for manager
 ├── handlers/
 │   ├── handler.go              # Registers and retrieves game operation handlers
-│   ├── handler_test.go         # Registers and retrieves game operation handlers
+│   ├── handler_test.go         # Test file for handler
 │   └── attack_handler.go       # Contains logic for the attack operation
-│   └── attack_handler.go       # Contains logic for the attack operation
+│   └── attack_handler_test.go  # Test file for attack handler
 ├── models/
 │   ├── game.go                 # Represents the game logic
 │   ├── game_test.go            # Test file for game model
 │   └── player.go               # Represents the player model and its methods
 │   └── player_test.go          # Test file for player model
 ├── main.go                     # Entry point of the application
+├── go.mod
+├── go.sum
+├── Makefile
 └── README.md                   # Project documentation
 ```
-
-## Testing
-
-To ensure the code works correctly, unit tests are provided. Run all tests using the following command:
-
-```sh
-go test ./...
-```
-
-### Contribution
-
-Feel free to fork the repository and submit pull requests for any improvements or bug fixes.
-
-### License
-
-This project is licensed under the MIT License. See the `LICENSE` file for more details.
 
 ---
 
