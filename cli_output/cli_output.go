@@ -10,3 +10,6 @@ func RenderInvalidOperation() {
 	fmt.Println("Invalid operation")
 }
 
+func RenderCliInput() {
+	fmt.Printf("\n>")
+}
