@@ -7,13 +7,7 @@ import (
 const attackOperation Operation = "attack"
 
 func AttackHandler(game *models.Game) {
-	playerA := game.PlayerA
-	playerB := game.PlayerB
-	if playerA.Health < playerB.Health {
-		game.Attack(playerA, playerB)
-	} else {
-		game.Attack(playerB, playerA)
-	}
+	game.PlayTurn()
 }
 
 func init() {

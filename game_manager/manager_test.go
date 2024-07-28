@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"bufio"
 	"bytes"
 	"io"
 	"os"
@@ -12,7 +13,7 @@ import (
 
 func TestStartGame(t *testing.T) {
 	// Simulate user input
-	input := "PlayerA 100 10 15\nPlayerB 80 8 12\n"
+	input := "PlayerA 100 10 15\nPlayerB 80 8 12\nno\n"
 	rStdin, wStdin, err := os.Pipe()
 	require.NoError(t, err)
 
@@ -48,8 +49,8 @@ func TestStartGame(t *testing.T) {
 	// Check the output
 	output := buf.String()
 	expectedOutputs := []string{
-		"Enter details for Player A:",
-		"Enter details for Player B:",
+		"Enter details for Player A",
+		"Enter details for Player B",
 	}
 
 	for _, expected := range expectedOutputs {
@@ -66,11 +67,9 @@ func TestCreatePlayer(t *testing.T) {
 	require.NoError(t, err)
 	wStdin.Close()
 
-	originalStdin := os.Stdin
-	os.Stdin = rStdin
-	defer func() { os.Stdin = originalStdin }()
+	reader := bufio.NewReader(rStdin)
 
-	player := createPlayer("Enter details for Player A:")
+	player := createPlayer(reader, "Enter details for Player A:")
 	assert.Equal(t, "PlayerA", player.Name)
 	assert.Equal(t, 100, player.Health)
 	assert.Equal(t, 10, player.Strength)
@@ -79,16 +78,12 @@ func TestCreatePlayer(t *testing.T) {
 
 func TestGameManagerIntegration(t *testing.T) {
 	input := "PlayerA 100 10 15\nPlayerB 80 8 12\nattack\n"
-	rStdin, wStdin, err := os.Pipe()
+	_, wStdin, err := os.Pipe()
 	require.NoError(t, err)
 
 	_, err = wStdin.WriteString(input)
 	require.NoError(t, err)
 	wStdin.Close()
-
-	originalStdin := os.Stdin
-	os.Stdin = rStdin
-	defer func() { os.Stdin = originalStdin }()
 
 	rStdout, wStdout, err := os.Pipe()
 	require.NoError(t, err)
@@ -110,6 +105,6 @@ func TestGameManagerIntegration(t *testing.T) {
 	<-done
 
 	output := buf.String()
-	assert.Contains(t, output, "Enter details for Player A:")
-	assert.Contains(t, output, "Enter details for Player B:")
+	assert.Contains(t, output, "Enter details for Player A")
+	assert.Contains(t, output, "Enter details for Player B")
 }

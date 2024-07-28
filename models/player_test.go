@@ -28,14 +28,18 @@ func TestPlayerTakeFatalDamage(t *testing.T) {
 	assert.False(t, player.IsAlive())
 }
 
-func TestPlayerAttackDamage(t *testing.T) {
+func TestPlayerRollAttackDice(t *testing.T) {
 	player := NewPlayer("PlayerA", 100, 10, 15)
-	attackDamage := player.AttackDamage()
-	assert.True(t, attackDamage >= 15 && attackDamage <= 90) // 1 to 6 times 15
+	for i := 0; i < 100; i++ { // Testing multiple rolls for randomness
+		attackDice := player.RollAttackDice()
+		assert.True(t, attackDice >= 1 && attackDice <= 6)
+	}
 }
 
-func TestPlayerDefendDamage(t *testing.T) {
+func TestPlayerRollDefendDice(t *testing.T) {
 	player := NewPlayer("PlayerA", 100, 10, 15)
-	defendDamage := player.DefendDamage()
-	assert.True(t, defendDamage >= 10 && defendDamage <= 60) // 1 to 6 times 10
+	for i := 0; i < 100; i++ { // Testing multiple rolls for randomness
+		defendDice := player.RollDefendDice()
+		assert.True(t, defendDice >= 1 && defendDice <= 6)
+	}
 }

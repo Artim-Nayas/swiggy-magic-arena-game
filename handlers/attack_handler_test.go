@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"bytes"
+	"fmt"
 	"io"
 	"os"
 	"testing"
@@ -15,7 +17,7 @@ func TestAttackHandler(t *testing.T) {
 	playerB := models.NewPlayer("PlayerB", 80, 8, 12)
 	game := models.NewGame(playerA, playerB)
 
-	handlerFunc, exists := GetHandler(attackOperation)
+	handlerFunc, exists := GetHandler("attack")
 	require.True(t, exists, "Attack handler should exist")
 	require.NotNil(t, handlerFunc, "Attack handler should not be nil")
 
@@ -27,52 +29,51 @@ func TestAttackHandler(t *testing.T) {
 }
 
 func TestAttackHandlerOutput(t *testing.T) {
-	defer setupStdout()()
-	r, fakeStdout, err := os.Pipe()
+	// Capture the output
+	r, w, err := os.Pipe()
 	require.NoError(t, err)
 
-	os.Stdout = fakeStdout
+	originalStdout := os.Stdout
+	os.Stdout = w
+
 	playerA := models.NewPlayer("PlayerA", 100, 10, 15)
 	playerB := models.NewPlayer("PlayerB", 80, 8, 12)
 	game := models.NewGame(playerA, playerB)
 
-	handlerFunc, exists := GetHandler(attackOperation)
+	handlerFunc, exists := GetHandler("attack")
 	require.True(t, exists, "Attack handler should exist")
 	require.NotNil(t, handlerFunc, "Attack handler should not be nil")
 
 	handlerFunc(game)
 
-	fakeStdout.Close()
-	bytes, err := io.ReadAll(r)
+	// Restore original stdout
+	w.Close()
+	os.Stdout = originalStdout
+
+	var buf bytes.Buffer
+	_, err = io.Copy(&buf, r)
 	require.NoError(t, err)
-	r.Close()
+	output := buf.String()
 
-	expectedOutput := "PlayerB attacks PlayerA: attack damage = 72, defended damage = 40, final damage = 32\n"
-	assert.Equal(t, expectedOutput, string(bytes))
+	// The output is dynamic due to random dice rolls, so we need to check for expected substrings
+	expectedSubstrings := []string{
+		"attacks",
+		"attack roll",
+		"defend roll",
+		"attack damage",
+		"defended damage",
+		"final damage",
+		"remaining health",
+	}
 
-	r, fakeStdout, err = os.Pipe()
-	require.NoError(t, err)
-	os.Stdout = fakeStdout
-
-	handlerFunc(game)
-
-	fakeStdout.Close()
-	bytes, err = io.ReadAll(r)
-	require.NoError(t, err)
-	r.Close()
-
-	expectedOutput = "PlayerA attacks PlayerB: attack damage = 90, defended damage = 48, final damage = 42\n"
-	assert.Equal(t, expectedOutput, string(bytes))
+	for _, substring := range expectedSubstrings {
+		assert.Contains(t, output, substring, fmt.Sprintf("Output should contain %s", substring))
+	}
 }
 
 func TestAttackHandlerRegistration(t *testing.T) {
-	handlerFunc, exists := GetHandler(attackOperation)
+	handlerFunc, exists := GetHandler("attack")
 	assert.True(t, exists, "Attack handler should exist")
 	assert.NotNil(t, handlerFunc, "Attack handler should not be nil")
 	assert.IsType(t, func(game *models.Game) {}, handlerFunc)
-}
-
-func setupStdout() func() {
-	originalStdout := os.Stdout
-	return func() { os.Stdout = originalStdout }
 }

@@ -33,18 +33,33 @@ func (g *Game) GetWinner() *Player {
 	return nil
 }
 
-func (g *Game) Attack(attacker, defender *Player) {
-	damage := attacker.AttackDamage()
-	defended := defender.DefendDamage()
+func (g *Game) PlayTurn() {
+	attacker, defender := g.selectAttackerAndDefender()
+	attackerDiceRoll := attacker.RollAttackDice()
+	defenderDiceRoll := defender.RollDefendDice()
+
+	damage := attacker.Attack * attackerDiceRoll
+	defended := defender.Strength * defenderDiceRoll
 	finalDamage := damage - defended
 	if finalDamage < 0 {
 		finalDamage = 0
 	}
 	defender.TakeDamage(finalDamage)
-	cli_output.Render(fmt.Sprintf("%s attacks %s: attack damage = %d, defended damage = %d, final damage = %d",
-		attacker.Name, defender.Name, damage, defended, finalDamage))
+
+	cli_output.Render(fmt.Sprintf("%s attacks %s: attack roll = %d, attack damage = %d, defend roll = %d, defended damage = %d, final damage = %d",
+		attacker.Name, defender.Name, attackerDiceRoll, damage, defenderDiceRoll, defended, finalDamage))
+
+	cli_output.Render(fmt.Sprintf("%s's remaining health: %d", defender.Name, defender.Health))
+	cli_output.Render(fmt.Sprintf("%s's remaining health: %d", attacker.Name, attacker.Health))
 
 	if !defender.IsAlive() {
 		g.active = false
 	}
+}
+
+func (g *Game) selectAttackerAndDefender() (*Player, *Player) {
+	if g.PlayerA.Health < g.PlayerB.Health {
+		return g.PlayerA, g.PlayerB
+	}
+	return g.PlayerB, g.PlayerA
 }

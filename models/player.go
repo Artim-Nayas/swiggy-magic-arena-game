@@ -33,12 +33,12 @@ func (p *Player) IsAlive() bool {
 	return p.Health > 0
 }
 
-func (p *Player) AttackDamage() int {
-	return p.Attack * game_action.RollDice()
+func (p *Player) RollAttackDice() int {
+	return game_action.RollDice()
 }
 
-func (p *Player) DefendDamage() int {
-	return p.Strength * game_action.RollDice()
+func (p *Player) RollDefendDice() int {
+	return game_action.RollDice()
 }
 
 func (p *Player) String() string {
