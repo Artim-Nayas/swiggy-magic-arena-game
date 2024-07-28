@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/ArtimNayas/magic_arena_game/cli_output"
 )
