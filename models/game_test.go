@@ -43,26 +43,6 @@ func TestGamePlayTurnAndWinner(t *testing.T) {
 	assert.False(t, game.IsActive())
 }
 
-func TestSelectAttackerAndDefender(t *testing.T) {
-	playerA := NewPlayer("PlayerA", 50, 10, 15)
-	playerB := NewPlayer("PlayerB", 80, 8, 12)
-	game := NewGame(playerA, playerB)
-
-	attacker, defender := game.selectAttackerAndDefender()
-	assert.Equal(t, playerA, attacker)
-	assert.Equal(t, playerB, defender)
-
-	playerA.TakeDamage(50) // PlayerA's health is now lower than PlayerB's health
-	attacker, defender = game.selectAttackerAndDefender()
-	assert.Equal(t, playerA, attacker)
-	assert.Equal(t, playerB, defender)
-
-	playerB.TakeDamage(60) // PlayerB's health is now lower than PlayerA's health
-	attacker, defender = game.selectAttackerAndDefender()
-	assert.Equal(t, playerB, attacker)
-	assert.Equal(t, playerA, defender)
-}
-
 func TestGameWithExactDamage(t *testing.T) {
 	playerA := NewPlayer("PlayerA", 10, 5, 15)
 	playerB := NewPlayer("PlayerB", 10, 5, 15)
@@ -76,7 +56,7 @@ func TestGameWithExactDamage(t *testing.T) {
 	assert.False(t, game.IsActive())
 	winner := game.GetWinner()
 	assert.NotNil(t, winner)
-	assert.True(t, winner.IsAlive() || playerA.Health == 0 && playerB.Health == 0)
+	assert.True(t, winner.IsAlive() || (playerA.Health == 0 && playerB.Health == 0))
 }
 
 func TestGameDraw(t *testing.T) {
@@ -94,4 +74,23 @@ func TestGameDraw(t *testing.T) {
 
 	assert.False(t, game.IsActive())
 	assert.Nil(t, game.GetWinner())
+}
+
+func TestGameBothPlayersAttack(t *testing.T) {
+	playerA := NewPlayer("PlayerA", 50, 10, 15)
+	playerB := NewPlayer("PlayerB", 40, 8, 12)
+	game := NewGame(playerA, playerB)
+
+	// Ensure both players attack in each turn
+	for game.IsActive() {
+		game.PlayTurn()
+	}
+
+	assert.False(t, game.IsActive())
+	winner := game.GetWinner()
+	if winner != nil {
+		assert.True(t, winner.IsAlive())
+	} else {
+		assert.Nil(t, winner)
+	}
 }

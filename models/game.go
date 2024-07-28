@@ -34,7 +34,32 @@ func (g *Game) GetWinner() *Player {
 }
 
 func (g *Game) PlayTurn() {
-	attacker, defender := g.selectAttackerAndDefender()
+	// Determine the order of attack based on health
+	var firstAttacker, secondAttacker, firstDefender, secondDefender *Player
+
+	if g.PlayerA.Health <= g.PlayerB.Health {
+		firstAttacker, firstDefender = g.PlayerA, g.PlayerB
+		secondAttacker, secondDefender = g.PlayerB, g.PlayerA
+	} else {
+		firstAttacker, firstDefender = g.PlayerB, g.PlayerA
+		secondAttacker, secondDefender = g.PlayerA, g.PlayerB
+	}
+
+	// First attack
+	g.attack(firstAttacker, firstDefender)
+
+	// Check if the first defender is still alive before the second attack
+	if firstDefender.IsAlive() {
+		g.attack(secondAttacker, secondDefender)
+	}
+
+	// Check if the game should still be active
+	if !g.PlayerA.IsAlive() || !g.PlayerB.IsAlive() {
+		g.active = false
+	}
+}
+
+func (g *Game) attack(attacker, defender *Player) {
 	attackerDiceRoll := attacker.RollAttackDice()
 	defenderDiceRoll := defender.RollDefendDice()
 
@@ -51,15 +76,4 @@ func (g *Game) PlayTurn() {
 
 	cli_output.Render(fmt.Sprintf("%s's remaining health: %d", defender.Name, defender.Health))
 	cli_output.Render(fmt.Sprintf("%s's remaining health: %d", attacker.Name, attacker.Health))
-
-	if !defender.IsAlive() {
-		g.active = false
-	}
-}
-
-func (g *Game) selectAttackerAndDefender() (*Player, *Player) {
-	if g.PlayerA.Health < g.PlayerB.Health {
-		return g.PlayerA, g.PlayerB
-	}
-	return g.PlayerB, g.PlayerA
 }
