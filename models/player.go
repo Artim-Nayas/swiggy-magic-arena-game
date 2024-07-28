@@ -24,6 +24,11 @@ func NewPlayer(name string, health, strength, attack int) *Player {
 func (p *Player) AttackDamage() int {
 	return p.Attack * game_action.RollDice()
 }
+
+func (p *Player) DefendDamage() int {
+	return p.Strength * game_action.RollDice()
+}
+
 func (p *Player) String() string {
 	return fmt.Sprintf("%s (Health: %d, Strength: %d, Attack: %d)", p.Name, p.Health, p.Strength, p.Attack)
 }

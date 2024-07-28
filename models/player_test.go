@@ -18,3 +18,9 @@ func TestPlayerAttackDamage(t *testing.T) {
 	attackDamage := player.AttackDamage()
 	assert.True(t, attackDamage >= 15 && attackDamage <= 90) // 1 to 6 times 15
 }
+
+func TestPlayerDefendDamage(t *testing.T) {
+	player := NewPlayer("PlayerA", 100, 10, 15)
+	defendDamage := player.DefendDamage()
+	assert.True(t, defendDamage >= 10 && defendDamage <= 60) // 1 to 6 times 10
+}
