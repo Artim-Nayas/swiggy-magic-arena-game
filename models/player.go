@@ -21,6 +21,18 @@ func NewPlayer(name string, health, strength, attack int) *Player {
 		Attack:   attack,
 	}
 }
+
+func (p *Player) TakeDamage(damage int) {
+	p.Health -= damage
+	if p.Health < 0 {
+		p.Health = 0
+	}
+}
+
+func (p *Player) IsAlive() bool {
+	return p.Health > 0
+}
+
 func (p *Player) AttackDamage() int {
 	return p.Attack * game_action.RollDice()
 }
